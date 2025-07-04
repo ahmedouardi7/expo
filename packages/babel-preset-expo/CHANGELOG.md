@@ -6,9 +6,72 @@
 
 ### 🎉 New features
 
+- Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 13.2.1 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 - 2025-06-04
+
+### 🎉 New features
+
+- Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
+
+### 🐛 Bug fixes
+
+- Disable `minifyTypeofWindow` for Web to prevent breaking Web Worker targets ([#36773](https://github.com/expo/expo/pull/36773) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 13.1.11 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.10 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.9 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Force disable `enableBabelRuntime` for when (new) Babel caller `type` input is `'script'` ([#36463](https://github.com/expo/expo/pull/36463) by [@kitten](https://github.com/kitten))
+
+## 13.1.8 — 2025-04-28
+
+### 🎉 New features
+
+- Always enable `import.meta` polyfill for server bundles. ([#36380](https://github.com/expo/expo/pull/36380) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.6 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
 
 ## 13.1.4 — 2025-04-14
 

@@ -6,13 +6,65 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+## 2.1.13 - 2025-07-01
+
+### 💡 Others
+
+- Added `System.getenv()` syntax support to credentials for extraMavenRepos. ([#37343](https://github.com/expo/expo/pull/37343) by [@kudo](https://github.com/kudo))
+
+## 2.1.12 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
+## 2.1.11 - 2025-06-08
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Added `--transitive-linking-dependencies` option to support react-native-edge-to-edge autolinking in CNG projects. ([#37194](https://github.com/expo/expo/pull/37194) by [@kudo](https://github.com/kudo))
+
+## 2.1.10 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed project properties were not being resolved correctly. ([#36666](https://github.com/expo/expo/pull/36666) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.8 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- Fixed `react-native-config` linked result order. ([#36442](https://github.com/expo/expo/pull/36442) by [@kudo](https://github.com/kudo))
+
+## 2.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.6 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.5 — 2025-04-21
+
+### 🎉 New features
+
 - Removed restriction preventing local expo modules from being excluded from autolinking. ([#36117](https://github.com/expo/expo/pull/36117) by [@wuguishifu](https://github.com/wuguishifu))
 
 ### 🐛 Bug fixes
 
 - Fixed Android building error on Windows. ([#36179](https://github.com/expo/expo/pull/36179) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 2.1.4 — 2025-04-14
 

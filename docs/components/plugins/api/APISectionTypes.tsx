@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
-import { Fragment, ReactNode } from 'react';
+import { Fragment } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
@@ -21,7 +21,6 @@ import {
   parseCommentContent,
   getCommentOrSignatureComment,
   getTagData,
-  renderParams,
   renderDefaultValue,
   renderIndexSignature,
   getCommentContent,
@@ -30,6 +29,7 @@ import {
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
+import { APIMethodParamRows } from './components/APIMethodParamRows';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -43,7 +43,7 @@ const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
-): ReactNode => (
+) => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? (
       <CALLOUT
@@ -64,39 +64,51 @@ const renderTypeDeclarationTable = (
 
 const renderTypeMethodEntry = (
   { children, signatures, comment }: TypeDeclarationContentData,
-  sdkVersion: string
-): ReactNode => {
+  sdkVersion: string,
+  inline: boolean = false
+) => {
   const baseSignature = signatures?.[0];
 
-  if (baseSignature?.type) {
+  if (!baseSignature?.type) {
+    return null;
+  }
+
+  const content = (
+    <>
+      <RawH4 className="!mb-3">
+        <MONOSPACE>
+          {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+          {` => `}
+          <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
+        </MONOSPACE>
+      </RawH4>
+      <APICommentTextBlock comment={comment} />
+      <Table>
+        <APIParamsTableHeadRow mainCellLabel="Parameter" />
+        <tbody>
+          {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        </tbody>
+      </Table>
+    </>
+  );
+
+  if (inline) {
+    return <div className="border-t border-secondary p-4 pt-2.5">{content}</div>;
+  } else {
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
         className="!mb-0">
-        <RawH4 className="!mb-3">
-          <MONOSPACE>
-            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
-            {` => `}
-            <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
-          </MONOSPACE>
-        </RawH4>
-        <APICommentTextBlock comment={comment} />
-        <Table>
-          <APIParamsTableHeadRow mainCellLabel="Parameter" />
-          <tbody>
-            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
-          </tbody>
-        </Table>
+        {content}
       </APIBox>
     );
   }
-  return null;
 };
 
 const renderTypePropertyRow = (
   { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
   sdkVersion: string
-): JSX.Element => {
+) => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -149,7 +161,7 @@ const renderTypePropertyRow = (
 const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
-): ReactNode => {
+) => {
   if (type.declaration) {
     // Object Types
     const signature = type?.declaration?.signatures?.[0];
@@ -165,7 +177,9 @@ const renderType = (
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
-            {signature.parameters && renderParams(signature.parameters, sdkVersion)}
+            {signature.parameters && (
+              <APIMethodParamRows parameters={signature.parameters} sdkVersion={sdkVersion} />
+            )}
           </div>
         ) : null}
         {signature?.type && (
@@ -207,7 +221,7 @@ const renderType = (
     );
     const propObjectDefinitions = propTypes.filter(type => !propMethodDefinitions.includes(type));
 
-    if (propTypes.length) {
+    if (propTypes.length > 0) {
       return (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
@@ -247,11 +261,11 @@ const renderType = (
           )}
           {propMethodDefinitions.map(
             propType =>
-              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion, true)
           )}
         </div>
       );
-    } else if (literalTypes.length) {
+    } else if (literalTypes.length > 0) {
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>

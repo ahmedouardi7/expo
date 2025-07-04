@@ -1,25 +1,16 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
-import nullthrows from 'nullthrows';
 import path from 'path';
 
-import { initAsync, setupE2EAppAsync } from './project';
+import { initAsync, setupE2EAppAsync, repoRoot } from './project';
 
-const repoRoot = nullthrows(
-  process.env.EXPO_REPO_ROOT || process.env.EAS_BUILD_WORKINGDIR,
-  'EXPO_REPO_ROOT is not defined'
-);
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
 /**
  *
  * This generates a project at the location TEST_PROJECT_ROOT,
- * that is configured to build a test app and run both suites
- * of updates E2E tests in the Detox environment.
- *
- * See `packages/expo-updates/e2e/README.md` for instructions on how
- * to run these tests locally.
+ * that is configured to build a test app to verify compilation on tvOS.
  *
  */
 

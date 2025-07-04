@@ -6,9 +6,62 @@
 
 ### 🎉 New features
 
+- [iOS] Migrate dev menu UI to SwiftUI ([#37414](https://github.com/expo/expo/pull/37414) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix Fast Refresh toggled off by default on Android. ([#37132](https://github.com/expo/expo/pull/37132) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.1.12 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.11 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [iOS] Fix custom menu actions not triggering their callbacks after a reload. ([#37084](https://github.com/expo/expo/pull/37084) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.1.10 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.8 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
+
+## 6.1.7 — 2025-04-28
+
+### 💡 Others
+
+- [Android] Enable edge-to-edge. ([#36370](https://github.com/expo/expo/pull/36370) by [@behenate](https://github.com/behenate))
+
+## 6.1.6 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.5 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.4 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
 
 ## 6.1.3 — 2025-04-14
 

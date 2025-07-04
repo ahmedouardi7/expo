@@ -8,7 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- [android] add missing proguard-rules for `expo-task-manager` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 13.1.6 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 13.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
 
 ## 13.1.3 — 2025-04-14
 

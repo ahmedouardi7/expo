@@ -1,7 +1,46 @@
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { ComponentProps } from 'react';
-declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+import { Protected } from '../views/Protected';
+/**
+ * We extend NativeStackNavigationOptions with our custom props
+ * to allow for several extra props to be used on web, like modalWidth
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+    webModalStyle?: {
+        /**
+         * Override the width of the modal (px or percentage). Only applies on web platform.
+         * @platform web
+         */
+        width?: number | string;
+        /**
+         * Override the height of the modal (px or percentage). Applies on web desktop.
+         * @platform web
+         */
+        height?: number | string;
+        /**
+         * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+         * @platform web
+         */
+        minHeight?: number | string;
+        /**
+         * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+         * @platform web
+         */
+        minWidth?: number | string;
+        /**
+         * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+         * @platform web
+         */
+        border?: string;
+        /**
+         * Override the overlay background color (any valid CSS color or rgba/hsla value).
+         * @platform web
+         */
+        overlayBackground?: string;
+    };
+};
+declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -50,7 +89,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     }>>(original: import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -100,7 +139,8 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
 } & {
     id?: undefined;
 }, "children">> & import("react").RefAttributes<unknown>> & {
-    Screen: (props: import("../useScreens").ScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
+    Screen: (props: import("../useScreens").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
+    Protected: typeof Protected;
 };
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -116,6 +156,7 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react")
     Screen: (props: ComponentProps<typeof RNStack.Screen> & {
         singular?: boolean;
     }) => null;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
 };
 export default Stack;
 export declare const StackRouter: typeof RNStackRouter;

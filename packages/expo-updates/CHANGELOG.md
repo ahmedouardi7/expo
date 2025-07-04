@@ -6,9 +6,73 @@
 
 ### 🎉 New features
 
+- Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Cleanup state machine resources when the module is destroyed. ([#37193](https://github.com/expo/expo/pull/37193) by [@alanjhughes](https://github.com/alanjhughes))
+- [CI] convert E2E (enabled) tests to Maestro. ([#37492](https://github.com/expo/expo/pull/37492) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (disabled) tests to Maestro. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (fingerprint and startup) tests to Maestro. ([#37592](https://github.com/expo/expo/pull/37592) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (old arch, custom init, error recovery, bricking measures disabled) tests to Maestro. ([#37600](https://github.com/expo/expo/pull/37600) by [@douglowder](https://github.com/douglowder))
+- Bump Express and types to `express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+- [CI] Removed Detox testing workaround code on Android. ([#37707](https://github.com/expo/expo/pull/37707) by [@kudo](https://github.com/kudo))
+- [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.15 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.14 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- Fix update failure reason not populated on iOS. ([#36893](https://github.com/expo/expo/pull/36893) by [@brainbicycle](https://github.com/brainbicycle))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.28.13 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Fixed errors when `configuration-cache` is enabled. ([#36678](https://github.com/expo/expo/pull/36678) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Update the constraints of the deferred root view. ([#36744](https://github.com/expo/expo/pull/36744) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.28.12 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.11 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.10 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.9 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.8 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.7 — 2025-04-25
+
+### 🐛 Bug fixes
+
+- Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
+
+## 0.28.6 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
 
 ## 0.28.5 — 2025-04-14
 

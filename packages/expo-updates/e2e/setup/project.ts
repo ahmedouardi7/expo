@@ -11,6 +11,14 @@ import path from 'path';
  */
 export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
+/**
+ * Repository root directory
+ */
+export const repoRoot = nullthrows(
+  process.env.EXPO_REPO_ROOT || process.env.EAS_BUILD_WORKINGDIR,
+  'EXPO_REPO_ROOT is not defined'
+);
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
@@ -78,7 +86,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
   return expoDependencyChunks.flat();
 }
 
-const expoResolutions = {};
+const expoResolutions: { [key: string]: string } = {};
 
 /**
  * Executes `npm pack` on one of the Expo packages used in updates E2E
@@ -210,13 +218,6 @@ async function copyCommonFixturesToProject(
 
   // Modify specific files for TV
   if (isTV) {
-    // Modify .detoxrc.json for TV
-    const detoxRCPath = path.resolve(projectRoot, '.detoxrc.json');
-    let detoxRCText = await fs.readFile(detoxRCPath, { encoding: 'utf-8' });
-    detoxRCText = detoxRCText.replace(/iphonesim/g, 'appletvsim').replace('iPhone 14', 'Apple TV');
-    await fs.rm(detoxRCPath);
-    await fs.writeFile(detoxRCPath, detoxRCText, { encoding: 'utf-8' });
-
     // Add TV environment variable to EAS build config
     const easJsonPath = path.resolve(projectRoot, 'eas.json');
     let easJson = require(easJsonPath);
@@ -303,21 +304,33 @@ async function preparePackageJson(
       'npx ts-node ./scripts/reset-app.ts App.tsx.update2; eas update --branch=main --message=Update2',
   };
 
-  // Additional scripts and dependencies for Detox testing
+  // Additional scripts and dependencies for Maestro testing
   const extraScripts = configureE2E
     ? {
-        'detox:android:debug:build': 'detox build -c android.debug',
-        'detox:android:debug:test': 'detox test -c android.debug',
-        'detox:android:release:build': 'detox build -c android.release',
-        'detox:android:release:test': 'detox test -c android.release',
-        'detox:ios:debug:build': 'detox build -c ios.debug',
-        'detox:ios:debug:test': 'detox test -c ios.debug',
-        'detox:ios:release:build': 'detox build -c ios.release',
-        'detox:ios:release:test': 'detox test -c ios.release',
+        'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
+        'maestro:android:debug:install':
+          'adb install android/app/build/outputs/apk/debug/app-debug.apk',
+        'maestro:android:release:build': 'cd android; ./gradlew :app:assembleRelease; cd ..',
+        'maestro:android:release:install':
+          'adb install android/app/build/outputs/apk/release/app-release.apk',
+        'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
+        'maestro:ios:debug:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+        'maestro:ios:debug:install':
+          'xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app',
+        'maestro:ios:release:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+        'maestro:ios:release:install':
+          'xcrun simctl install booted ios/build/Build/Products/Release-iphonesimulator/updatese2e.app',
+        'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
+        'tvos:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
+        'start:dev-client':
+          'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -325,15 +338,10 @@ async function preparePackageJson(
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^9.0.0',
-        '@types/express': '^4.17.17',
-        '@types/jest': '^29.4.0',
-        detox: '^20.33.0',
-        express: '^4.18.2',
+        '@types/express': '^5.0.3',
+        express: '^5.1.0',
         'form-data': '^4.0.0',
-        jest: '^29.3.1',
-        'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
-        'ts-jest': '^29.0.5',
         'patch-package': '^8.0.0',
       }
     : {};
@@ -360,13 +368,13 @@ async function preparePackageJson(
       '@types/react': '~19.0.10',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
-      'ts-node': '10.9.1',
-      typescript: '5.2.2',
+      'ts-node': '10.9.2',
+      typescript: '5.8.3',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
-      typescript: '5.2.2',
+      typescript: '5.8.3',
       '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
     },
   };
@@ -376,8 +384,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.79.0-0rc2',
-        '@react-native-tvos/config-tv': '^0.1.1',
+        'react-native': 'npm:react-native-tvos@0.80.0-0rc5',
+        '@react-native-tvos/config-tv': '^0.1.3',
       },
       expo: {
         install: {
@@ -392,7 +400,7 @@ async function preparePackageJson(
 }
 
 /**
- * Adds Detox modules to both iOS and Android expo-updates code.
+ * Adds our E2E test native modules to both iOS and Android expo-updates code.
  * Returns a function that cleans up these changes to the repo once E2E setup is complete
  */
 async function prepareLocalUpdatesModule(repoRoot: string) {
@@ -474,6 +482,7 @@ function transformAppJsonForE2E(
     [
       '@config-plugins/detox',
       {
+        skipProguard: true,
         subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
       },
     ],
@@ -493,10 +502,9 @@ function transformAppJsonForE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -514,7 +522,7 @@ function transformAppJsonForE2E(
   };
 }
 
-export function transformAppJsonForE2EWithCustomInit(
+export function transformAppJsonForE2EWithOldArch(
   appJson: any,
   projectName: string,
   runtimeVersion: string,
@@ -525,7 +533,7 @@ export function transformAppJsonForE2EWithCustomInit(
     ...transformedForE2E,
     expo: {
       ...transformedForE2E.expo,
-      newArchEnabled: true,
+      newArchEnabled: false,
     },
   };
 }
@@ -554,6 +562,25 @@ export function transformAppJsonForE2EWithFingerprint(
       },
     },
   };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and turns off updates native debug
+ */
+export function transformAppJsonForE2EWithDevClient(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  delete transformedForE2E.expo.updates.useNativeDebug;
+  return transformedForE2E;
 }
 
 export function transformAppJsonForE2EWithBrickingMeasuresDisabled(
@@ -615,6 +642,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
     [
       '@config-plugins/detox',
       {
+        skipProguard: true,
         subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
       },
     ],
@@ -624,10 +652,9 @@ export function transformAppJsonForUpdatesDisabledE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -822,7 +849,7 @@ export async function initAsync(
     'utf-8'
   );
 
-  // Append additional Proguard rule for Detox 20
+  // Append additional Proguard rule
   await fs.appendFile(
     path.join(projectRoot, 'android', 'app', 'proguard-rules.pro'),
     [
@@ -903,19 +930,6 @@ export async function initAsync(
     }
   }
 
-  await fs.appendFile(
-    path.join(projectRoot, 'android', 'app', 'build.gradle'),
-    [
-      '',
-      '// [Detox] AGP 8 fixed the `testProguardFiles` for androidTest',
-      'android.buildTypes.release {',
-      '   testProguardFiles "proguard-rules.pro"',
-      '}',
-      '',
-    ].join('\n'),
-    'utf-8'
-  );
-
   // Cleanup local updates module if needed
   if (cleanupLocalUpdatesModule) {
     await cleanupLocalUpdatesModule();
@@ -930,7 +944,7 @@ export async function setupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV }
   );
 
@@ -939,12 +953,6 @@ export async function setupE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupManualTestAppAsync(projectRoot: string, repoRoot: string) {
@@ -981,7 +989,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     {
       appJsFileName: 'App-updates-disabled.tsx',
       repoRoot,
@@ -994,12 +1002,6 @@ export async function setupUpdatesDisabledE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupUpdatesErrorRecoveryE2EAppAsync(
@@ -1008,7 +1010,7 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1017,12 +1019,6 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupUpdatesFingerprintE2EAppAsync(
@@ -1034,10 +1030,9 @@ export async function setupUpdatesFingerprintE2EAppAsync(
     [
       'tsconfig.json',
       '.fingerprintignore',
-      '.detoxrc.json',
+      '.env',
       'eas.json',
-      'eas-hooks',
-      'e2e',
+      'maestro',
       'includedAssets',
       'scripts',
     ],
@@ -1049,12 +1044,6 @@ export async function setupUpdatesFingerprintE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-fingerprint.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupUpdatesStartupE2EAppAsync(
@@ -1063,7 +1052,7 @@ export async function setupUpdatesStartupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1072,12 +1061,6 @@ export async function setupUpdatesStartupE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-startup.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
@@ -1086,7 +1069,7 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1095,12 +1078,6 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-bricking-measures-disabled.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }
 
 export async function setupUpdatesDevClientE2EAppAsync(
@@ -1109,7 +1086,7 @@ export async function setupUpdatesDevClientE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1118,10 +1095,4 @@ export async function setupUpdatesDevClientE2EAppAsync(
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-dev-client.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
-  );
 }

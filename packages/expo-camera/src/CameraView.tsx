@@ -11,6 +11,7 @@ import {
   ScanningOptions,
   ScanningResult,
   VideoCodec,
+  AvailableLenses,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -120,6 +121,16 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
+   * Returns the available lenses for the currently selected camera.
+   *
+   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @platform ios
+   */
+  async getAvailableLensesAsync(): Promise<string[]> {
+    return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
+  }
+
+  /**
    * Returns an object with the supported features of the camera on the current device.
    */
   getSupportedFeatures(): {
@@ -189,6 +200,9 @@ export default class CameraView extends Component<CameraViewProps> {
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
+    if (Platform.OS === 'ios' && options?.pictureRef) {
+      return this._cameraRef.current?.takePictureRef?.(options);
+    }
     return this._cameraRef.current?.takePicture(pictureOptions);
   }
 
@@ -265,6 +279,8 @@ export default class CameraView extends Component<CameraViewProps> {
 
   /**
    * Stops recording if any is in progress.
+   * @platform android
+   * @platform ios
    */
   stopRecording() {
     this._cameraRef.current?.stopRecording();
@@ -273,6 +289,12 @@ export default class CameraView extends Component<CameraViewProps> {
   _onCameraReady = () => {
     if (this.props.onCameraReady) {
       this.props.onCameraReady();
+    }
+  };
+
+  _onAvailableLensesChanged = ({ nativeEvent }: { nativeEvent: AvailableLenses }) => {
+    if (this.props.onAvailableLensesChanged) {
+      this.props.onAvailableLensesChanged(nativeEvent);
     }
   };
 
@@ -342,6 +364,7 @@ export default class CameraView extends Component<CameraViewProps> {
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onBarcodeScanned={onBarcodeScanned}
+        onAvailableLensesChanged={this._onAvailableLensesChanged}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
       />
