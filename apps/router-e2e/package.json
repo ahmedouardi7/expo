@@ -63,7 +63,7 @@
   "devDependencies": {
     "compression": "^1.8.0",
     "esbuild": "^0.25.8",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10",
