@@ -129,7 +129,7 @@
     "@types/react-dom": "^19.1.7",
     "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
-    "react-server-dom-webpack": "~19.0.0"
+    "react-server-dom-webpack": "~19.0.2"
   },
   "dependencies": {
     "@expo/metro-runtime": "^6.1.2",
