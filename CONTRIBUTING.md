@@ -1,3 +1,14 @@
+Managing your personal access tokens
+You can use a personal access token in place of a password when authenticating to GitHub in the command line or with the API.
+Below are some example URLs that generate the tokens we see most often:
+
+Read repo contents
+Push access to repos
+GitHub Models access
+Update code and open a PR
+Manage Copilot licenses in an organization
+Make Copilot requests
+
 # Contributing to the Expo SDK
 
 - [📦 Download and Setup](#-download-and-setup)
